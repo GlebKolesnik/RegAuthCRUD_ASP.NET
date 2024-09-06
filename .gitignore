@@ -1,0 +1,38 @@
+# Rider specific files
+.idea/
+*.sln.iml
+.idea/modules.xml
+.idea/*.sln
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/.idea_modules/
+
+# .NET specific files
+bin/
+obj/
+**/bin
+**/obj
+*.user
+*.suo
+
+# Docker specific files (не игнорируем Dockerfile и docker-compose.yml)
+!Dockerfile
+!docker-compose.yml
+
+# Log files
+*.log
+
+# Ignore temporary files from Visual Studio
+.vscode/
+.vs/
+*.code-workspace
+
+# Ignore build output
+TestResults/
+*.buildlog
+*.userosscache
+*.DS_Store
+
+# NuGet packages
+*.nupkg
+project.lock.json
