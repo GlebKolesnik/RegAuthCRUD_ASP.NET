@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\TestAssigment_HK.props" />
+</Project>
