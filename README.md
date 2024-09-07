@@ -18,15 +18,12 @@ To install and run the project using Docker, follow these steps:
    docker-compose down --volumes
 ## Project Architecture Overview
 
-The project follows a **layered architecture**, where the main logic is separated into different layers for better maintainability and scalability.
+The project follows a **layered architecture**, where the main logic is separated into different layers.
 
 ### Design Patterns
 
 1. **Repository Pattern**:
-   - The **Repository** pattern is used to encapsulate data access logic. Each entity (like `Task` or `User`) has its own repository interface and implementation. This allows for:
-     - Separation of concerns: The business logic doesn't directly deal with database queries.
-     - Better testability: Since repositories can be easily mocked, it becomes easier to write unit tests.
-     - Centralized data access logic: All the database-related logic is contained in a repository, making it easier to maintain.
+   - The **Repository** pattern is used to encapsulate data access logic. Each entity (like `Task` or `User`) has its own repository interface and implementation. 
 
    Example:
    - `ITaskRepository` and `TaskRepository` handle operations related to `Task` entities (e.g., `AddTaskAsync`, `GetTaskByIdAsync`).
@@ -56,13 +53,7 @@ The project follows a **layered architecture**, where the main logic is separate
    - `TasksController` manages all task-related API endpoints (`GET`, `POST`, `PUT`, `DELETE`).
    - `UsersController` manages user authentication and registration endpoints.
 
-### Why Use Repositories and Services?
 
-- **Repositories**: 
-  - Repositories abstract the data layer and allow for easy changes to the underlying data storage mechanism (e.g., switching from SQL to NoSQL). They also improve code organization by keeping the data access logic separate from the business logic.
-
-- **Services**: 
-  - The service layer provides a clear boundary between the application’s business logic and the data access logic. It allows for better organization of business rules and improves testability by decoupling the business logic from the data access layer.
 
 ### Key Methods:
 
@@ -78,5 +69,85 @@ The project follows a **layered architecture**, where the main logic is separate
 
 ---
 
-By using a layered architecture along with the repository and service patterns, the project achieves clean separation of concerns, easier maintainability, and better testability. Each component has a clear responsibility, which allows for easy scaling and modifications in the future.
+## How to Test the API
 
+### API testing examples will be shown using Postman.
+
+**You can also create two users, and on behalf of each of them, create multiple tasks.
+And then try, for example, to request a task by its id, and take the id of another user's task. After you execute the request, you will get an empty body, because users do not have access to other users' tasks.**
+
+1. **Registration**
+   - **Type**: `POST`
+   - **URL**: `http://localhost:8080/api/users/register`
+   - **Request Body**:
+   ```json
+   {
+     "username": "testuser",
+     "email": "testuser@gmail.com",
+     "password": "Moloko_1"
+   }
+2. **Authentication**
+- **Type**: `POST`
+- **URL**: `http://localhost:8080/api/users/login`
+- **After successful authentication, you will receive a token in the following format:**
+```json
+{
+  "username": "testuser",
+  "email": "testuser@gmail.com",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOiI1NjUzMDU1NS1kNzBjLTRiOTctOGQzYS05NTU5YTI1NDViZWYiLCJ1bmlxdWVfbmFtZSI6ImdvbGVyMzM4IiwiZW1haWwiOiJnb2xlcm92aWNoQGdtYWlsLmNvbSIsIm5iZiI6MTcyNTYzNDc1NywiZXhwIjoxNzI1NjM4MzU3LCJpYXQiOjE3MjU2MzQ3NTcsImlzcyI6IlRlc3RBc3NpZ21lbnRfSEsiLCJhdWQiOiJUZXN0QXNzaWdtZW50X0hLIn0.HqeZyQ6iMeb7OxmWmxVFs3K6xIqXICEvqK4rj_Z30Ik"
+}
+```
+Copy the entire content of the ```token``` field and use it in the next request.
+- **Request Body**:
+```json
+{
+    "emailOrUsername": "testuser",
+    "password": "Moloko_1"
+}
+```
+3. **Create Task**
+- **Type**: `POST`
+- **URL**: `http://localhost:8080/api/tasks`
+- **Header**: In 'Key' field: `Authorization`, In 'Value' field `Bearer <token>`
+- **Body**: 
+```json
+{
+    "title": "Test Task",
+    "description": "This is a test task",
+    "dueDate": "2024-09-10T10:00:00",
+    "priority": 1,  
+    "status": 0    
+}
+```
+
+4. **GetListTasks**
+- **Type**: `GET`
+- **URL**: `http://localhost:8080/api/tasks`
+- **Header**: In 'Key' field: `Authorization`, In 'Value' field `Bearer <token>`
+- **Request Body**: `empty`
+
+5. **GetTaskByID**
+- **Type**: `GET`
+- **URL**: `http://localhost:8080/api/tasks/{id}`
+- **Header**: In 'Key' field: `Authorization`, In 'Value' field `Bearer <token>`
+- **Request Body**: `empty`
+  
+6. **EditTaskByID**
+- **Type**: `PUT`
+- **URL**: `http://localhost:8080/api/tasks/{id}`
+- **Header**: In 'Key' field: `Authorization`, In 'Value' field `Bearer <token>`
+- **Request Body**: 
+```json
+{
+    "title": "Updated Task Title",
+    "description": "Updated Task Description",
+    "dueDate": "2024-10-01T10:00:00",
+    "priority": 2,  
+    "status": 1     
+}
+```
+7. **DeleteTaskById**
+- **Type**: `DELETE`
+- **URL**: `http://localhost:8080/api/tasks/{id}`
+- **Header**: In 'Key' field: `Authorization`, In 'Value' field `Bearer <token>`
+- **Request Body**: `empty`
